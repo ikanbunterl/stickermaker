@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Sticker Maker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #075e54, #128c7e, #25d366);
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.85);
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        .wa-icon {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr 280px;
+            gap: 20px;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* Panels */
+        .panel {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #2a2a4a;
+        }
+
+        .panel h3 {
+            color: #25d366;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2a2a4a;
+        }
+
+        /* Left Panel - Tools */
+        .tools-section {
+            margin-bottom: 20px;
+        }
+
+        .tools-section label {
+            display: block;
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+
+        .upload-area {
+            border: 2px dashed #25d366;
+            border-radius: 12px;
+            padding: 30px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(37, 211, 102, 0.05);
+            margin-bottom: 15px;
+        }
+
+        .upload-area:hover {
+            background: rgba(37, 211, 102, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-area.dragover {
+            background: rgba(37, 211, 102, 0.15);
+            border-color: #fff;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .upload-area .highlight {
+            color: #25d366;
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #075e54, #128c7e);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-secondary {
+            background: #2a2a4a;
+            color: #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #3a3a5a;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Sliders */
+        .slider-group {
+            margin-bottom: 15px;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+
+        .slider-group label span {
+            color: #25d366;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #2a2a4a;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #25d366;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Text Input */
+        input[type="text"], input[type="color"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            background: #0f0f23;
+            color: #e0e0e0;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: #25d366;
+        }
+
+        input[type="color"] {
+            height: 40px;
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        /* Canvas Area */
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-wrapper {
+            background: #111;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #2a2a4a;
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        canvas {
+            border-radius: 12px;
+            max-width: 100%;
+            cursor: crosshair;
+            background: transparent;
+            background-image:
+                linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+                linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+                linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .canvas-info {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .canvas-info .size-info {
+            color: #25d366;
+            font-weight: bold;
+        }
+
+        /* Right Panel - Emoji & Templates */
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
+            margin-bottom: 15px;
+        }
+
+        .emoji-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .emoji-grid::-webkit-scrollbar-thumb {
+            background: #25d366;
+            border-radius: 2px;
+        }
+
+        .emoji-item {
+            font-size: 1.5rem;
+            padding: 5px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .emoji-item:hover {
+            background: rgba(37, 211, 102, 0.15);
+            transform: scale(1.2);
+        }
+
+        .emoji-item:active {
+            transform: scale(0.95);
+        }
+
+        .bg-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .bg-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .bg-option:hover, .bg-option.active {
+            border-color: #25d366;
+            transform: scale(1.1);
+        }
+
+        .bg-option.transparent-bg {
+            background-image:
+                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 10px 10px;
+            background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+        }
+
+        /* Templates */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .template-item {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: #0f0f23;
+        }
+
+        .template-item:hover {
+            border-color: #25d366;
+            transform: scale(1.05);
+        }
+
+        /* Export Section */
+        .export-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #2a2a4a;
+        }
+
+        .quality-options {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .quality-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            background: #0f0f23;
+            color: #aaa;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .quality-btn.active {
+            border-color: #25d366;
+            color: #25d366;
+            background: rgba(37, 211, 102, 0.1);
+        }
+
+        /* My Stickers */
+        .my-stickers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .my-sticker {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            background: #0f0f23;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .my-sticker img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .my-sticker:hover {
+            border-color: #25d366;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid #2a2a4a;
+            text-align: center;
+        }
+
+        .modal h2 {
+            color: #25d366;
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            color: #aaa;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .modal .steps {
+            text-align: left;
+            background: #0f0f23;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .modal .steps li {
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .modal .steps li strong {
+            color: #25d366;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1a1a2e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid #25d366;
+            z-index: 300;
+            transition: transform 0.4s ease;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+
+            .canvas-wrapper {
+                min-height: 300px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 10px;
+                gap: 15px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+        }
+
+        /* Drawing Tools */
+        .draw-tools {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .draw-tool {
+            padding: 6px 12px;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            background: #0f0f23;
+            color: #aaa;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .draw-tool.active {
+            border-color: #25d366;
+            color: #25d366;
+            background: rgba(37, 211, 102, 0.1);
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .color-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-swatch:hover, .color-swatch.active {
+            border-color: white;
+            transform: scale(1.15);
+        }
+
+        /* Undo/Redo */
+        .history-btns {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .history-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            background: #0f0f23;
+            color: #aaa;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .history-btn:hover:not(:disabled) {
+            border-color: #25d366;
+            color: #25d366;
+        }
+
+        .history-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Tab system for right panel */
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            background: #0f0f23;
+            color: #aaa;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #25d366;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Sticker pack preview */
+        .pack-preview {
+            background: #0f0f23;
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .pack-preview h4 {
+            color: #25d366;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .pack-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .pack-sticker {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pack-sticker img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pack-sticker .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background: rgba(231, 76, 60, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 10px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pack-sticker:hover .remove-btn {
+            display: flex;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #2a2a4a;
+            border-radius: 2px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: #25d366;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>
+        <div class="wa-icon">💬</div>
+        WhatsApp Sticker Maker
+    </h1>
+    <p>Buat sticker keren untuk WhatsApp — 512×512 WebP</p>
+</div>
+
+<div class="container">
+    <!-- LEFT PANEL: Tools -->
+    <div class="panel" id="leftPanel">
+        <h3>🛠️ Tools</h3>
+
+        <!-- Upload -->
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <p><span class="highlight">Klik atau drag</span> gambar ke sini</p>
+            <p style="font-size:0.75rem; margin-top:5px;">PNG, JPG, GIF, WebP</p>
+        </div>
+        <input type="file" id="imageInput" accept="image/*">
+
+        <!-- Draw Tools -->
+        <div class="tools-section">
+            <label>✏️ Drawing Mode</label>
+            <div class="draw-tools">
+                <button class="draw-tool active" data-tool="select" onclick="setTool('select')">👆 Select</button>
+                <button class="draw-tool" data-tool="brush" onclick="setTool('brush')">🖌️ Brush</button>
+                <button class="draw-tool" data-tool="eraser" onclick="setTool('eraser')">🧹 Eraser</button>
+            </div>
+
+            <div class="color-palette" id="colorPalette">
+                <div class="color-swatch active" style="background:#ffffff" data-color="#ffffff" onclick="setColor(this)"></div>
+                <div class="color-swatch" style="background:#000000" data-color="#000000" onclick="setColor(this)"></div>
+                <div class="color-swatch" style="background:#e74c3c" data-color="#e74c3c" onclick="setColor(this)"></div>
+                <div class="color-swatch" style="background:#25d366" data-color="#25d366" onclick="setColor(this)"></div>
+                <div class="color-swatch" style="background:#3498db" data-color="#3498db" onclick="setColor(this)"></div>
+                <div class="color-swatch" style="background:#f39c12" data-color="#f39c12" onclick="setColor(this)"></div>
+                <div class="color-swatch" style="background:#9b59b6" data-color="#9b59b6" onclick="setColor(this)"></div>
+                <div class="color-swatch" style="background:#1abc9c" data-color="#1abc9c" onclick="setColor(this)"></div>
+                <input type="color" id="customColor" value="#ffffff" style="width:28px;height:28px;padding:0;border:none;border-radius:50%;cursor:pointer;" onchange="setCustomColor(this.value)">
+            </div>
+
+            <div class="slider-group">
+                <label>Brush Size <span id="brushSizeVal">5</span>px</label>
+                <input type="range" id="brushSize" min="1" max="50" value="5" oninput="updateBrushSize(this.value)">
+            </div>
+        </div>
+
+        <!-- Text -->
+        <div class="tools-section">
+            <label>📝 Tambah Teks</label>
+            <input type="text" id="stickerText" placeholder="Ketik teks sticker...">
+            <input type="color" id="textColor" value="#ffffff">
+            <select id="fontFamily">
+                <option value="Arial">Arial</option>
+                <option value="Comic Sans MS">Comic Sans</option>
+                <option value="Impact">Impact</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Verdana">Verdana</option>
+            </select>
+            <div class="slider-group">
+                <label>Font Size <span id="fontSizeVal">40</span>px</label>
+                <input type="range" id="fontSize" min="10" max="120" value="40" oninput="updateFontSize(this.value)">
+            </div>
+            <button class="btn btn-primary" onclick="addText()">➕ Tambah Teks</button>
+        </div>
+
+        <!-- Image Adjustments -->
+        <div class="tools-section">
+            <label>🎨 Adjustments</label>
+            <div class="slider-group">
+                <label>Brightness <span id="brightnessVal">100</span>%</label>
+                <input type="range" id="brightness" min="0" max="200" value="100" oninput="updateAdjustment('brightness', this.value)">
+            </div>
+            <div class="slider-group">
+                <label>Contrast <span id="contrastVal">100</span>%</label>
+                <input type="range" id="contrast" min="0" max="200" value="100" oninput="updateAdjustment('contrast', this.value)">
+            </div>
+            <div class="slider-group">
+                <label>Rotation <span id="rotationVal">0</span>°</label>
+                <input type="range" id="rotation" min="0" max="360" value="0" oninput="updateAdjustment('rotation', this.value)">
+            </div>
+            <div class="slider-group">
+                <label>Scale <span id="scaleVal">100</span>%</label>
+                <input type="range" id="scale" min="10" max="300" value="100" oninput="updateAdjustment('scale', this.value)">
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="history-btns">
+            <button class="history-btn" id="undoBtn" onclick="undo()" disabled>↩️ Undo</button>
+            <button class="history-btn" id="redoBtn" onclick="redo()" disabled>↪️ Redo</button>
+        </div>
+
+        <button class="btn btn-danger" onclick="clearCanvas()">🗑️ Clear All</button>
+    </div>
+
+    <!-- CENTER: Canvas -->
+    <div class="panel canvas-container">
+        <h3>🎨 Canvas</h3>
+        <div class="canvas-wrapper">
+            <canvas id="stickerCanvas" width="512" height="512"></canvas>
+        </div>
+        <div class="canvas-info">
+            <span class="size-info">512 × 512 px</span> — Format: WebP | Max: 100KB
+        </div>
+
+        <!-- Export -->
+        <div class="export-section" style="width:100%">
+            <h3 style="color:#25d366; margin-bottom:10px;">📤 Export</h3>
+            <div class="quality-options">
+                <button class="quality-btn active" data-quality="80" onclick="setQuality(this)">Normal</button>
+                <button class="quality-btn" data-quality="60" onclick="setQuality(this)">Kecil</button>
+                <button class="quality-btn" data-quality="40" onclick="setQuality(this)">Mini</button>
+            </div>
+            <div class="progress-bar"><div class="fill" id="progressFill" style="width:0%"></div></div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-success" onclick="downloadSticker()" id="downloadBtn" style="flex:1;">
+                    💾 Download WebP
+                </button>
+                <button class="btn btn-primary" onclick="addToPack()" style="flex:1;">
+                    📦 Tambah ke Pack
+                </button>
+            </div>
+            <button class="btn btn-secondary" onclick="shareWhatsApp()">
+                📱 Buka WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: Emoji, BG, Templates, Pack -->
+    <div class="panel" id="rightPanel">
+        <h3>✨ Elements</h3>
+
+        <div class="tab-bar">
+            <button class="tab active" onclick="switchTab('emoji')">😀 Emoji</button>
+            <button class="tab" onclick="switchTab('bg')">🎨 BG</button>
+            <button class="tab" onclick="switchTab('templates')">📋 Templates</button>
+            <button class="tab" onclick="switchTab('pack')">📦 Pack</button>
+        </div>
+
+        <!-- Emoji Tab -->
+        <div class="tab-content active" id="tab-emoji">
+            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">Klik emoji untuk menambahkan ke canvas</p>
+            <div class="emoji-grid" id="emojiGrid"></div>
+        </div>
+
+        <!-- BG Tab -->
+        <div class="tab-content" id="tab-bg">
+            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">Pilih background</p>
+            <div class="bg-options" id="bgOptions">
+                <div class="bg-option transparent-bg active" onclick="setBg(this, 'transparent')"></div>
+                <div class="bg-option" style="background:#ffffff" onclick="setBg(this, '#ffffff')"></div>
+                <div class="bg-option" style="background:#000000" onclick="setBg(this, '#000000')"></div>
+                <div class="bg-option" style="background:#e74c3c" onclick="setBg(this, '#e74c3c')"></div>
+                <div class="bg-option" style="background:#3498db" onclick="setBg(this, '#3498db')"></div>
+                <div class="bg-option" style="background:#25d366" onclick="setBg(this, '#25d366')"></div>
+                <div class="bg-option" style="background:#f39c12" onclick="setBg(this, '#f39c12')"></div>
+                <div class="bg-option" style="background:#9b59b6" onclick="setBg(this, '#9b59b6')"></div>
+                <div class="bg-option" style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="setBg(this, 'linear-gradient(135deg,#667eea,#764ba2)')"></div>
+                <div class="bg-option" style="background:linear-gradient(135deg,#f093fb,#f5576c)" onclick="setBg(this, 'linear-gradient(135deg,#f093fb,#f5576c)')"></div>
+                <div class="bg-option" style="background:linear-gradient(135deg,#4facfe,#00f2fe)" onclick="setBg(this, 'linear-gradient(135deg,#4facfe,#00f2fe)')"></div>
+                <div class="bg-option" style="background:linear-gradient(135deg,#43e97b,#38f9d7)" onclick="setBg(this, 'linear-gradient(135deg,#43e97b,#38f9d7)')"></div>
+            </div>
+            <input type="color" id="customBgColor" value="#075e54" style="margin-top:5px;">
+            <button class="btn btn-secondary" onclick="setCustomBg()" style="margin-top:5px;">🎨 Custom Background</button>
+        </div>
+
+        <!-- Templates Tab -->
+        <div class="tab-content" id="tab-templates">
+            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">Template sticker populer</p>
+            <div class="template-grid" id="templateGrid"></div>
+        </div>
+
+        <!-- Pack Tab -->
+        <div class="tab-content" id="tab-pack">
+            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">Sticker pack kamu</p>
+            <div class="pack-preview">
+                <h4>📦 My Sticker Pack (<span id="packCount">0</span>/30)</h4>
+                <div class="pack-grid" id="packGrid"></div>
+            </div>
+            <button class="btn btn-success" onclick="downloadPack()" id="downloadPackBtn" style="margin-top:10px;" disabled>
+                📥 Download Semua
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div class="modal-overlay" id="helpModal">
+    <div class="modal">
+        <h2>📱 Cara Import ke WhatsApp</h2>
+        <p>WhatsApp tidak menyediakan API langsung dari browser, tapi kamu bisa:</p>
+        <ol class="steps">
+            <li><strong>Download</strong> sticker sebagai file WebP</li>
+            <li><strong>Android:</strong> Kirim file via WhatsApp ke kontak/grup, lalu tekan lama → "Add to Favorites"</li>
+            <li><strong>iPhone:</strong> Simpan ke Photos → Buka WhatsApp → Pilih sticker → Import</li>
+            <li><strong>Alternatif:</strong> Gunakan app seperti "Personal Stickers for WhatsApp" (Android) atau "Sticker Maker" (iOS)</li>
+        </ol>
+        <button class="btn btn-success" onclick="closeModal()">Mengerti! 👍</button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ===== STATE =====
+    const canvas = document.getElementById('stickerCanvas');
+    const ctx = canvas.getContext('2d');
+    const CANVAS_SIZE = 512;
+
+    let state = {
+        bgColor: 'transparent',
+        bgGradient: null,
+        image: null,
+        imageX: 0,
+        imageY: 0,
+        brightness: 100,
+        contrast: 100,
+        rotation: 0,
+        scale: 100,
+        texts: [],
+        emojis: [],
+        drawings: [],
+        currentTool: 'select',
+        currentColor: '#ffffff',
+        brushSize: 5,
+        quality: 80,
+        isDrawing: false,
+        lastX: 0,
+        lastY: 0,
+        history: [],
+        historyIndex: -1,
+        stickerPack: [],
+        selectedText: -1,
+        selectedEmoji: -1,
+        isDragging: false,
+        dragOffsetX: 0,
+        dragOffsetY: 0,
+    };
+
+    // ===== EMOJIS =====
+    const emojis = [
+        '😀','😂','🤣','😍','🥰','😘','😎','🤩',
+        '😢','😭','😤','🤬','👻','💀','🤡','👽',
+        '❤️','🔥','⭐','💯','👍','👎','👊','✌️',
+        '🙏','💪','🤝','🎉','🎊','🏆','💎','🌈',
+        '🌸','🌺','🍕','🍔','🎮','🎵','🎸','📱',
+        '💻','🚀','✈️','🏠','🐶','🐱','🦊','🐼',
+        '🦁','🐸','🐵','🦋','🌟','☀️','🌙','⚡'
+    ];
+
+    // ===== TEMPLATES =====
+    const templates = [
+        { emoji: '😂', text: 'LOL', bg: '#f39c12' },
+        { emoji: '❤️', text: 'Love', bg: '#e74c3c' },
+        { emoji: '🔥', text: 'Fire', bg: '#1a1a2e' },
+        { emoji: '👍', text: 'OK', bg: '#25d366' },
+        { emoji: '😎', text: 'Cool', bg: '#3498db' },
+        { emoji: '🤣', text: 'Haha', bg: '#9b59b6' },
+        { emoji: '💀', text: 'Dead', bg: '#000000' },
+        { emoji: '👻', text: 'Boo!', bg: '#667eea' },
+        { emoji: '🎉', text: 'Party', bg: '#f093fb' },
+        { emoji: '💪', text: 'Strong', bg: '#43e97b' },
+        { emoji: '🙏', text: 'Thanks', bg: '#4facfe' },
+        { emoji: '😍', text: 'Wow', bg: '#f5576c' },
+    ];
+
+    // ===== INIT =====
+    function init() {
+        renderEmojis();
+        renderTemplates();
+        saveState();
+        redraw();
+    }
+
+    function renderEmojis() {
+        const grid = document.getElementById('emojiGrid');
+        grid.innerHTML = emojis.map(e =>
+            `<div class="emoji-item" onclick="addEmoji('${e}')">${e}</div>`
+        ).join('');
+    }
+
+    function renderTemplates() {
+        const grid = document.getElementById('templateGrid');
+        grid.innerHTML = templates.map((t, i) =>
+            `<div class="template-item" onclick="loadTemplate(${i})" style="background:${t.bg}">${t.emoji}</div>`
+        ).join('');
+    }
+
+    // ===== UPLOAD =====
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+
+    uploadArea.addEventListener('click', () => imageInput.click());
+    uploadArea.addEventListener('dragover', e => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        if (e.dataTransfer.files.length) loadImage(e.dataTransfer.files[0]);
+    });
+    imageInput.addEventListener('change', e => {
+        if (e.target.files.length) loadImage(e.target.files[0]);
+    });
+
+    function loadImage(file) {
+        if (!file.type.startsWith('image/')) {
+            showToast('⚠️ File harus gambar!');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                state.image = img;
+                state.imageX = 0;
+                state.imageY = 0;
+                state.rotation = 0;
+                state.scale = 100;
+                document.getElementById('rotation').value = 0;
+                document.getElementById('rotationVal').textContent = '0';
+                document.getElementById('scale').value = 100;
+                document.getElementById('scaleVal').textContent = '100';
+                saveState();
+                redraw();
+                showToast('✅ Gambar berhasil dimuat!');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // ===== TOOLS =====
+    function setTool(tool) {
+        state.currentTool = tool;
+        document.querySelectorAll('.draw-tool').forEach(b => b.classList.remove('active'));
+        document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+        canvas.style.cursor = tool === 'select' ? 'default' : 'crosshair';
+    }
+
+    function setColor(el) {
+        state.currentColor = el.dataset.color;
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function setCustomColor(color) {
+        state.currentColor = color;
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    }
+
+    function updateBrushSize(val) {
+        state.brushSize = parseInt(val);
+        document.getElementById('brushSizeVal').textContent = val;
+    }
+
+    function updateFontSize(val) {
+        document.getElementById('fontSizeVal').textContent = val;
+    }
+
+    function updateAdjustment(type, val) {
+        val = parseInt(val);
+        switch(type) {
+            case 'brightness':
+                state.brightness = val;
+                document.getElementById('brightnessVal').textContent = val;
+                break;
+            case 'contrast':
+                state.contrast = val;
+                document.getElementById('contrastVal').textContent = val;
+                break;
+            case 'rotation':
+                state.rotation = val;
+                document.getElementById('rotationVal').textContent = val;
+                break;
+            case 'scale':
+                state.scale = val;
+                document.getElementById('scaleVal').textContent = val;
+                break;
+        }
+        redraw();
+    }
+
+    // ===== CANVAS DRAWING =====
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+
+    // Touch support
+    canvas.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        startDraw({ offsetX: (touch.clientX - rect.left) * (CANVAS_SIZE / rect.width), offsetY: (touch.clientY - rect.top) * (CANVAS_SIZE / rect.height) });
+    });
+    canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        draw({ offsetX: (touch.clientX - rect.left) * (CANVAS_SIZE / rect.width), offsetY: (touch.clientY - rect.top) * (CANVAS_SIZE / rect.height) });
+    });
+    canvas.addEventListener('touchend', endDraw);
+
+    function getCanvasCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = CANVAS_SIZE / rect.width;
+        const scaleY = CANVAS_SIZE / rect.height;
+        return {
+            x: (e.offsetX || e.clientX - rect.left) * scaleX,
+            y: (e.offsetY || e.clientY - rect.top) * scaleY
+        };
+    }
+
+    function startDraw(e) {
+        const coords = getCanvasCoords(e);
+
+        if (state.currentTool === 'select') {
+            // Check if clicking on text or emoji for dragging
+            checkSelection(coords.x, coords.y);
+            return;
+        }
+
+        state.isDrawing = true;
+        state.lastX = coords.x;
+        state.lastY = coords.y;
+
+        if (state.currentTool === 'brush' || state.currentTool === 'eraser') {
+            const stroke = {
+                type: 'stroke',
+                color: state.currentTool === 'eraser' ? 'transparent' : state.currentColor,
+                size: state.brushSize,
+                points: [{ x: coords.x, y: coords.y }],
+                eraser: state.currentTool === 'eraser'
+            };
+            state.drawings.push(stroke);
+        }
+    }
+
+    function draw(e) {
+        if (!state.isDrawing) return;
+        const coords = getCanvasCoords(e);
+
+        if (state.currentTool === 'brush' || state.currentTool === 'eraser') {
+            const lastStroke = state.drawings[state.drawings.length - 1];
+            if (lastStroke && lastStroke.type === 'stroke') {
+                lastStroke.points.push({ x: coords.x, y: coords.y });
+                redraw();
+            }
+        }
+
+        if (state.isDragging && state.selectedText >= 0) {
+            state.texts[state.selectedText].x = coords.x - state.dragOffsetX;
+            state.texts[state.selectedText].y = coords.y - state.dragOffsetY;
+            redraw();
+        }
+
+        if (state.isDragging && state.selectedEmoji >= 0) {
+            state.emojis[state.selectedEmoji].x = coords.x - state.dragOffsetX;
+            state.emojis[state.selectedEmoji].y = coords.y - state.dragOffsetY;
+            redraw();
+        }
+
+        state.lastX = coords.x;
+        state.lastY = coords.y;
+    }
+
+    function endDraw() {
+        if (state.isDrawing) {
+            state.isDrawing = false;
+            saveState();
+        }
+        state.isDragging = false;
+    }
+
+    function checkSelection(x, y) {
+        // Check texts
+        for (let i = state.texts.length - 1; i >= 0; i--) {
+            const t = state.texts[i];
+            ctx.font = `bold ${t.size}px "${t.font}"`;
+            const metrics = ctx.measureText(t.text);
+            const w = metrics.width;
+            const h = t.size;
+            if (x >= t.x - w/2 && x <= t.x + w/2 && y >= t.y - h && y <= t.y + h/4) {
+                state.selectedText = i;
+                state.isDragging = true;
+                state.dragOffsetX = x - t.x;
+                state.dragOffsetY = y - t.y;
+                return;
+            }
+        }
+        // Check emojis
+        for (let i = state.emojis.length - 1; i >= 0; i--) {
+            const e = state.emojis[i];
+            const size = e.size;
+            if (x >= e.x - size/2 && x <= e.x + size/2 && y >= e.y - size/2 && y <= e.y + size/2) {
+                state.selectedEmoji = i;
+                state.isDragging = true;
+                state.dragOffsetX = x - e.x;
+                state.dragOffsetY = y - e.y;
+                return;
+            }
+        }
+        state.selectedText = -1;
+        state.selectedEmoji = -1;
+    }
+
+    // ===== ADD ELEMENTS =====
+    function addText() {
+        const text = document.getElementById('stickerText').value.trim();
+        if (!text) {
+            showToast('⚠️ Ketik teks dulu!');
+            return;
+        }
+        state.texts.push({
+            text: text,
+            x: CANVAS_SIZE / 2,
+            y: CANVAS_SIZE / 2,
+            size: parseInt(document.getElementById('fontSize').value),
+            color: document.getElementById('textColor').value,
+            font: document.getElementById('fontFamily').value
+        });
+        document.getElementById('stickerText').value = '';
+        saveState();
+        redraw();
+        showToast('✅ Teks ditambahkan! Drag untuk pindah');
+    }
+
+    function addEmoji(emoji) {
+        state.emojis.push({
+            emoji: emoji,
+            x: CANVAS_SIZE / 2 + (Math.random() - 0.5) * 100,
+            y: CANVAS_SIZE / 2 + (Math.random() - 0.5) * 100,
+            size: 80
+        });
+        saveState();
+        redraw();
+    }
+
+    function loadTemplate(index) {
+        const t = templates[index];
+        clearCanvas(true);
+        state.bgColor = t.bg;
+        state.emojis.push({
+            emoji: t.emoji,
+            x: CANVAS_SIZE / 2,
+            y: CANVAS_SIZE / 2 - 30,
+            size: 150
+        });
+        state.texts.push({
+            text: t.text,
+            x: CANVAS_SIZE / 2,
+            y: CANVAS_SIZE / 2 + 80,
+            size: 60,
+            color: '#ffffff',
+            font: 'Impact'
+        });
+        saveState();
+        redraw();
+        showToast(`✅ Template "${t.text}" dimuat!`);
+    }
+
+    function setBg(el, color) {
+        document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
+        state.bgColor = color;
+        state.bgGradient = color.includes('gradient') ? color : null;
+        redraw();
+    }
+
+    function setCustomBg() {
+        const color = document.getElementById('customBgColor').value;
+        state.bgColor = color;
+        state.bgGradient = null;
+        document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('active'));
+        redraw();
+    }
+
+    // ===== REDRAW =====
+    function redraw() {
+        ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+        // Background
+        if (state.bgColor !== 'transparent') {
+            if (state.bgGradient) {
+                const colors = state.bgGradient.match(/#[a-fA-F0-9]{6}/g);
+                if (colors && colors.length === 2) {
+                    const grad = ctx.createLinearGradient(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                    grad.addColorStop(0, colors[0]);
+                    grad.addColorStop(1, colors[1]);
+                    ctx.fillStyle = grad;
+                }
+            } else {
+                ctx.fillStyle = state.bgColor;
+            }
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        }
+
+        // Image
+        if (state.image) {
+            ctx.save();
+            ctx.translate(CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+            ctx.rotate(state.rotation * Math.PI / 180);
+            ctx.scale(state.scale / 100, state.scale / 100);
+            ctx.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%)`;
+
+            const imgAspect = state.image.width / state.image.height;
+            let drawW, drawH;
+            if (imgAspect > 1) {
+                drawW = CANVAS_SIZE * 0.9;
+                drawH = drawW / imgAspect;
+            } else {
+                drawH = CANVAS_SIZE * 0.9;
+                drawW = drawH * imgAspect;
+            }
+
+            ctx.drawImage(state.image, -drawW / 2, -drawH / 2, drawW, drawH);
+            ctx.restore();
+        }
+
+        // Drawings
+        state.drawings.forEach(stroke => {
+            if (stroke.points.length < 2) return;
+            ctx.beginPath();
+            ctx.strokeStyle = stroke.color;
+            ctx.lineWidth = stroke.size;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.globalCompositeOperation = stroke.eraser ? 'destination-out' : 'source-over';
+
+            ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+            for (let i = 1; i < stroke.points.length; i++) {
+                ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+            }
+            ctx.stroke();
+        });
+        ctx.globalCompositeOperation = 'source-over';
+
+        // Emojis
+        state.emojis.forEach(e => {
+            ctx.font = `${e.size}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(e.emoji, e.x, e.y);
+        });
+
+        // Texts
+        state.texts.forEach(t => {
+            ctx.font = `bold ${t.size}px "${t.font}"`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Outline
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = t.size / 15;
+            ctx.lineJoin = 'round';
+            ctx.strokeText(t.text, t.x, t.y);
+
+            // Fill
+            ctx.fillStyle = t.color;
+            ctx.fillText(t.text, t.x, t.y);
+        });
+
+        updateFilesizeEstimate();
+    }
+
+    // ===== HISTORY =====
+    function saveState() {
+        const snap = {
+            bgColor: state.bgColor,
+            bgGradient: state.bgGradient,
+            brightness: state.brightness,
+            contrast: state.contrast,
+            rotation: state.rotation,
+            scale: state.scale,
+            texts: JSON.parse(JSON.stringify(state.texts)),
+            emojis: JSON.parse(JSON.stringify(state.emojis)),
+            drawings: JSON.parse(JSON.stringify(state.drawings)),
+            imageData: state.image ? state.image.src : null
+        };
+
+        // Remove future states if we went back
+        if (state.historyIndex < state.history.length - 1) {
+            state.history = state.history.slice(0, state.historyIndex + 1);
+        }
+
+        state.history.push(snap);
+        state.historyIndex = state.history.length - 1;
+
+        // Limit history
+        if (state.history.length > 30) {
+            state.history.shift();
+            state.historyIndex--;
+        }
+
+        updateHistoryButtons();
+    }
+
+    function restoreState(snap) {
+        state.bgColor = snap.bgColor;
+        state.bgGradient = snap.bgGradient;
+        state.brightness = snap.brightness;
+        state.contrast = snap.contrast;
+        state.rotation = snap.rotation;
+        state.scale = snap.scale;
+        state.texts = JSON.parse(JSON.stringify(snap.texts));
+        state.emojis = JSON.parse(JSON.stringify(snap.emojis));
+        state.drawings = JSON.parse(JSON.stringify(snap.drawings));
+
+        if (snap.imageData) {
+            const img = new Image();
+            img.onload = () => {
+                state.image = img;
+                redraw();
+            };
+            img.src = snap.imageData;
+        } else {
+            state.image = null;
+            redraw();
+        }
+
+        // Update UI sliders
+        document.getElementById('brightness').value = state.brightness;
+        document.getElementById('brightnessVal').textContent = state.brightness;
+        document.getElementById('contrast').value = state.contrast;
+        document.getElementById('contrastVal').textContent = state.contrast;
+        document.getElementById('rotation').value = state.rotation;
+        document.getElementById('rotationVal').textContent = state.rotation;
+        document.getElementById('scale').value = state.scale;
+        document.getElementById('scaleVal').textContent = state.scale;
+
+        updateHistoryButtons();
+    }
+
+    function undo() {
+        if (state.historyIndex > 0) {
+            state.historyIndex--;
+            restoreState(state.history[state.historyIndex]);
+        }
+    }
+
+    function redo() {
+        if (state.historyIndex < state.history.length - 1) {
+            state.historyIndex++;
+            restoreState(state.history[state.historyIndex]);
+        }
+    }
+
+    function updateHistoryButtons() {
+        document.getElementById('undoBtn').disabled = state.historyIndex <= 0;
+        document.getElementById('redoBtn').disabled = state.historyIndex >= state.history.length - 1;
+    }
+
+    function clearCanvas(silent) {
+        state.image = null;
+        state.texts = [];
+        state.emojis = [];
+        state.drawings = [];
+        state.bgColor = 'transparent';
+        state.bgGradient = null;
+        state.brightness = 100;
+        state.contrast = 100;
+        state.rotation = 0;
+        state.scale = 100;
+        document.getElementById('brightness').value = 100;
+        document.getElementById('brightnessVal').textContent = '100';
+        document.getElementById('contrast').value = 100;
+        document.getElementById('contrastVal').textContent = '100';
+        document.getElementById('rotation').value = 0;
+        document.getElementById('rotationVal').textContent = '0';
+        document.getElementById('scale').value = 100;
+        document.getElementById('scaleVal').textContent = '100';
+        saveState();
+        redraw();
+        if (!silent) showToast('🗑️ Canvas dibersihkan!');
+    }
+
+    // ===== EXPORT =====
+    function setQuality(el) {
+        document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        state.quality = parseInt(el.dataset.quality);
+    }
+
+    function canvasToBlob() {
+        return new Promise(resolve => {
+            canvas.toBlob(resolve, 'image/webp', state.quality / 100);
+        });
+    }
+
+    async function downloadSticker() {
+        const btn = document.getElementById('downloadBtn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Processing...';
+
+        const progress = document.getElementById('progressFill');
+        progress.style.width = '30%';
+
+        const blob = await canvasToBlob();
+        progress.style.width = '70%';
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sticker_${Date.now()}.webp`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        progress.style.width = '100%';
+        setTimeout(() => progress.style.width = '0%', 1000);
+
+        btn.disabled = false;
+        btn.innerHTML = '💾 Download WebP';
+
+        const sizeKB = (blob.size / 1024).toFixed(1);
+        showToast(`✅ Sticker downloaded! (${sizeKB} KB)`);
+    }
+
+    function updateFilesizeEstimate() {
+        // Quick estimate
+        canvas.toBlob(blob => {
+            if (blob) {
+                const sizeKB = (blob.size / 1024).toFixed(1);
+                const info = document.querySelector('.canvas-info');
+                info.innerHTML = `<span class="size-info">512 × 512 px</span> — Estimasi: <span class="size-info">${sizeKB} KB</span> ${blob.size > 102400 ? '⚠️ >100KB!' : '✅ OK'}`;
+            }
+        }, 'image/webp', state.quality / 100);
+    }
+
+    // ===== STICKER PACK =====
+    async function addToPack() {
+        if (state.stickerPack.length >= 30) {
+            showToast('⚠️ Pack penuh! Maksimal 30 sticker');
+            return;
+        }
+
+        const blob = await canvasToBlob();
+        const url = URL.createObjectURL(blob);
+        state.stickerPack.push(url);
+        updatePackUI();
+        showToast(`✅ Sticker ditambahkan ke pack! (${state.stickerPack.length}/30)`);
+    }
+
+    function updatePackUI() {
+        const grid = document.getElementById('packGrid');
+        grid.innerHTML = state.stickerPack.map((url, i) =>
+            `<div class="pack-sticker">
+                <img src="${url}" alt="Sticker ${i + 1}">
+                <button class="remove-btn" onclick="removeFromPack(${i})">✕</button>
+            </div>`
+        ).join('');
+
+        document.getElementById('packCount').textContent = state.stickerPack.length;
+        document.getElementById('downloadPackBtn').disabled = state.stickerPack.length === 0;
+    }
+
+    function removeFromPack(index) {
+        URL.revokeObjectURL(state.stickerPack[index]);
+        state.stickerPack.splice(index, 1);
+        updatePackUI();
+        showToast('🗑️ Sticker dihapus dari pack');
+    }
+
+    async function downloadPack() {
+        showToast('📦 Menyiapkan download pack...');
+        for (let i = 0; i < state.stickerPack.length; i++) {
+            const a = document.createElement('a');
+            a.href = state.stickerPack[i];
+            a.download = `sticker_${i + 1}.webp`;
+            a.click();
+            await new Promise(r => setTimeout(r, 300));
+        }
+        showToast(`✅ ${state.stickerPack.length} sticker didownload!`);
+    }
+
+    // ===== SHARE =====
+    function shareWhatsApp() {
+        if (navigator.share) {
+            canvas.toBlob(async blob => {
+                const file = new File([blob], 'sticker.webp', { type: 'image/webp' });
+                try {
+                    await navigator.share({
+                        title: 'WhatsApp Sticker',
+                        text: 'Stiker yang saya buat! 🎨',
+                        files: [file]
+                    });
+                } catch (e) {
+                    // Fallback: open WhatsApp
+                    window.open('https://wa.me/', '_blank');
+                }
+            }, 'image/webp', state.quality / 100);
+        } else {
+            // Fallback: try to open WhatsApp web
+            window.open('https://web.whatsapp.com/', '_blank');
+            showToast('📱 Buka WhatsApp dan kirim sticker yang sudah didownload');
+        }
+    }
+
+    // ===== TABS =====
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    // ===== MODAL =====
+    function closeModal() {
+        document.getElementById('helpModal').classList.remove('active');
+    }
+
+    // ===== TOAST =====
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ===== KEYBOARD SHORTCUTS =====
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
+        if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            if (state.selectedText >= 0) {
+                state.texts.splice(state.selectedText, 1);
+                state.selectedText = -1;
+                saveState();
+                redraw();
+            }
+            if (state.selectedEmoji >= 0) {
+                state.emojis.splice(state.selectedEmoji, 1);
+                state.selectedEmoji = -1;
+                saveState();
+                redraw();
+            }
+        }
+    });
+
+    // ===== START =====
+    init();
+</script>
+
+</body>
+</html>
